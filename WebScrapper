@@ -1,0 +1,86 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using HtmlAgilityPack;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+
+namespace WebScrapper
+{
+    public partial class Form1 : Form
+    {
+        public IWebDriver driver;
+        
+        public Form1()
+        {
+            InitializeComponent();
+            openBrowser();
+            finddata();
+        }
+
+     
+       
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+           
+          
+        }
+
+        public void openBrowser()
+        {
+            var driverService = ChromeDriverService.CreateDefaultService();
+            driverService.HideCommandPromptWindow = true;
+            driver = new ChromeDriver(driverService);
+            try
+            {
+                driver.Navigate().GoToUrl("https://www.morningstar.com/");
+            }
+            catch(Exception c)
+            {
+                throw c;
+            }
+        }
+
+
+        private void finddata()
+        {
+            IList<IWebElement> searchElements = driver.FindElements(By.TagName("tbody"));
+            foreach (IWebElement i in searchElements)
+            {
+                HtmlAgilityPack.HtmlDocument htmlDocument = new HtmlAgilityPack.HtmlDocument();
+                var text = i.GetAttribute("innerHTML");
+
+                htmlDocument.LoadHtml(text);
+                var inputs = htmlDocument.DocumentNode.Descendants("tr").ToList();
+                
+
+                foreach (var items in inputs)
+                {
+                    HtmlAgilityPack.HtmlDocument htmlDocument1 = new HtmlAgilityPack.HtmlDocument();
+                    htmlDocument1.LoadHtml(items.InnerHtml);
+
+                    
+
+                    var tds = inputs;
+                   
+                  txtResults.AppendText(tds[0].InnerText);
+
+
+
+
+                    
+                }
+            }
+        }
+
+       
+        
+    }
+}
